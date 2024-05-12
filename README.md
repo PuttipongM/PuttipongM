@@ -17,4 +17,12 @@ Hello, I am the owner of my own business named "Puttipong Studio". I operate a b
 <p align="center">
    <i>"Believe you can and you're halfway there." — Theodore Roosevelt
 </i>
+   
+<br>
+<br>
+<a target="_blank" href="mailto:puttipong.m@puttipong-studio.in.th"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white"></img></a>
+<a target="_blank" href="https://discord.com/channels/@me/722339605440888903"><img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white"></img></a>
+<a target="_blank" href="https://www.resume.puttipong.dev/"><img src="https://img.shields.io/badge/-resume-003366?style=for-the-badge&logo=iCloud&logoColor=white"></img></a>
+<br>
+
 </p>
