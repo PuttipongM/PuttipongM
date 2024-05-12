@@ -1,5 +1,5 @@
 # Hello! I'm Puttipong Maneechot 👋
-Hello, I am the owner of my own business named "Puttipong Studio". I operate a business related to Produciton House and Software House. Most of the services are Accepting photos or videos at various important events or general events. and website design and writing services I started getting into photography and videography when I was 9 years old at school. I was so interested in this field that when I was 12 I decided to start a business with my savings. and continuously develop skills
+Hello, I am the owner of my own business named "Puttipong Studio". I operate a business related to Produciton House and Software House. Most of the services are Accepting photos or videos at various important events or general events. and website design and writing services I started getting into photography and videography when I was 9 years old at school. I was so interested in this field that when I was 12 I decided to start a business with my savings. and continuously develop skills.
 ## 📘 About Me
 
 <img src="Begging_Tame_Wolf.webp" height="180" align="right">
