@@ -26,3 +26,5 @@ Hello, I am the owner of my own business named "Puttipong Studio". I operate a b
 <br>
 
 </p>
+#
+<p align="left"> <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=PuttipongM" alt="PuttipongM" /></a> </p>
