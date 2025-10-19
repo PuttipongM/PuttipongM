@@ -4,9 +4,6 @@ Hello, I am the owner of my own business named "Puttipong Studio". I operate a b
 
 <img src="Begging_Tame_Wolf.webp" height="180" align="right">
 
-- 👀 I’m interested in Everythings it's make me happy!
-- 🌱 I’m currently learning React.js , Vue.js , Next.js
-- 🛠️ I’m currently developing a E-commerce Website
 - 📫 How to reach me puttipong.m@puttipong-studio.in.th
 - 📂 I’m looking to contribute to open source software
 - ⚡ Fun fact: I always forgot to start apache in xampp control panel LOL
