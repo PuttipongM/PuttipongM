@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyTax888 - ระบบคำนวณภาษีออนไลน์</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-medium: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.3),
+                0 0 20px rgba(255,255,255,0.3);
+            background: linear-gradient(45deg, #fff, #f0f8ff, #fff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header p {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            opacity: 0.95;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            font-weight: 300;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 
+                var(--shadow-light),
+                0 0 0 1px var(--glass-border);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.8s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 25px 50px rgba(31, 38, 135, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.25);
+        }
+
+        .tab-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .tab.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 
+                0 8px 25px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .tab:hover:not(.active) {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.6);
+            background: white;
+            box-shadow: 
+                0 8px 25px rgba(102, 126, 234, 0.15),
+                0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+            font-style: italic;
+        }
+
+        .btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 8px 25px rgba(102, 126, 234, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 15px 35px rgba(102, 126, 234, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+            transition: transform 0.1s;
+        }
+
+        .result {
+            background: var(--success-gradient);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 25px;
+            box-shadow: 
+                0 15px 35px rgba(67, 233, 123, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .result::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(180deg); }
+        }
+
+        .result h3 {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin: 0 -15px 15px -15px;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px -15px 0 -15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .floating-element-1 {
+            top: 10%;
+            left: 10%;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-element-2 {
+            top: 70%;
+            right: 15%;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            border-radius: 50%;
+            animation: float 12s ease-in-out infinite reverse;
+        }
+
+        .floating-element-3 {
+            bottom: 20%;
+            left: 20%;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .tab {
+                border-radius: 12px;
+                margin: 0;
+            }
+            
+            .card {
+                padding: 25px;
+                margin: 15px 0;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 20px;
+                font-size: 16px;
+            }
+            
+            .floating-element {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+                border-radius: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Floating Elements -->
+        <div class="floating-element floating-element-1"></div>
+        <div class="floating-element floating-element-2"></div>
+        <div class="floating-element floating-element-3"></div>
+        
+        <div class="header">
+            <h1>🧮 EasyTax888</h1>
+            <p>ระบบคำนวณภาษีออนไลน์ที่ง่าย รวดเร็ว และแม่นยำ</p>
+        </div>
+
+        <div class="card">
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('income-tax', this)">ภาษีเงินได้บุคคลธรรมดา</button>
+                    <button class="tab" onclick="showTab('vat', this)">ภาษีมูลค่าเพิ่ม (VAT)</button>
+                    <button class="tab" onclick="showTab('withholding', this)">ภาษีหัก ณ ที่จ่าย</button>
+                </div>
+
+                <!-- Income Tax Calculator -->
+                <div id="income-tax" class="tab-content active">
+                    <h2>คำนวณภาษีเงินได้บุคคลธรรมดา</h2>
+                    <div class="grid">
+                        <div>
+                            <div class="form-group">
+                                <label for="annual-income">รายได้ต่อปี (บาท)</label>
+                                <input type="number" id="annual-income" placeholder="กรอกรายได้ต่อปี">
+                            </div>
+                            <div class="form-group">
+                                <label for="expenses">ค่าใช้จ่าย/ลดหย่อน (บาท)</label>
+                                <input type="number" id="expenses" placeholder="กรอกค่าใช้จ่ายที่ลดหย่อนได้">
+                            </div>
+                            <button class="btn" onclick="calculateIncomeTax()">คำนวณภาษีเงินได้</button>
+                        </div>
+                        <div id="income-tax-result"></div>
+                    </div>
+                </div>
+
+                <!-- VAT Calculator -->
+                <div id="vat" class="tab-content">
+                    <h2>คำนวณภาษีมูลค่าเพิ่ม (VAT 7%)</h2>
+                    <div class="grid">
+                        <div>
+                            <div class="form-group">
+                                <label for="amount">จำนวนเงิน (บาท)</label>
+                                <input type="number" id="amount" placeholder="กรอกจำนวนเงิน">
+                            </div>
+                            <div class="form-group">
+                                <label for="vat-type">ประเภทการคำนวณ</label>
+                                <select id="vat-type" style="width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px;">
+                                    <option value="add">บวก VAT (ยังไม่รวม VAT)</option>
+                                    <option value="include">รวม VAT แล้ว</option>
+                                </select>
+                            </div>
+                            <button class="btn" onclick="calculateVAT()">คำนวณ VAT</button>
+                        </div>
+                        <div id="vat-result"></div>
+                    </div>
+                </div>
+
+                <!-- Withholding Tax Calculator -->
+                <div id="withholding" class="tab-content">
+                    <h2>คำนวณภาษีหัก ณ ที่จ่าย</h2>
+                    <div class="grid">
+                        <div>
+                            <div class="form-group">
+                                <label for="payment-amount">จำนวนเงินที่จ่าย (บาท)</label>
+                                <input type="number" id="payment-amount" placeholder="กรอกจำนวนเงินที่จ่าย">
+                            </div>
+                            <div class="form-group">
+                                <label for="tax-rate">อัตราภาษี (%)</label>
+                                <select id="tax-rate" style="width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px;">
+                                    <option value="1">1% - ค่าโฆษณา</option>
+                                    <option value="2">2% - ค่าขนส่ง</option>
+                                    <option value="3">3% - ค่าเช่า</option>
+                                    <option value="5">5% - ค่าบริการ</option>
+                                    <option value="10">10% - ค่าที่ปรึกษา</option>
+                                </select>
+                            </div>
+                            <button class="btn" onclick="calculateWithholding()">คำนวณภาษีหัก ณ ที่จ่าย</button>
+                        </div>
+                        <div id="withholding-result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add loading animation
+        function showLoading(buttonId) {
+            const button = document.getElementById(buttonId) || event.target;
+            const originalText = button.textContent;
+            button.classList.add('loading');
+            button.textContent = 'กำลังคำนวณ...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.classList.remove('loading');
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 800);
+        }
+
+        function showTab(tabName, clickedTab) {
+            // Add smooth transition
+            const currentTab = document.querySelector('.tab-content.active');
+            if (currentTab) {
+                currentTab.style.opacity = '0';
+                currentTab.style.transform = 'translateY(10px)';
+                
+                setTimeout(() => {
+                    // Hide all tab contents
+                    const tabContents = document.querySelectorAll('.tab-content');
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Remove active class from all tabs
+                    const tabs = document.querySelectorAll('.tab');
+                    tabs.forEach(tab => tab.classList.remove('active'));
+                    
+                    // Show selected tab content
+                    const newTab = document.getElementById(tabName);
+                    newTab.classList.add('active');
+                    newTab.style.opacity = '0';
+                    newTab.style.transform = 'translateY(10px)';
+                    
+                    // Add active class to clicked tab
+                    if (clickedTab) {
+                        clickedTab.classList.add('active');
+                    } else if (event && event.target) {
+                        event.target.classList.add('active');
+                    }
+                    
+                    // Animate in
+                    setTimeout(() => {
+                        newTab.style.opacity = '1';
+                        newTab.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 150);
+            }
+        }
+
+        function calculateIncomeTax() {
+            showLoading();
+            
+            setTimeout(() => {
+                const income = parseFloat(document.getElementById('annual-income').value) || 0;
+                const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+                
+                // Standard deductions
+                const personalDeduction = 60000; // ค่าลดหย่อนส่วนตัว
+                const spouseDeduction = 60000; // ค่าลดหย่อนคู่สมรส (สมมติ)
+                
+                const netIncome = income - expenses - personalDeduction - spouseDeduction;
+                let tax = 0;
+                
+                if (netIncome > 0) {
+                    // Tax brackets for 2024
+                    if (netIncome <= 150000) {
+                        tax = 0;
+                    } else if (netIncome <= 300000) {
+                        tax = (netIncome - 150000) * 0.05;
+                    } else if (netIncome <= 500000) {
+                        tax = 150000 * 0.05 + (netIncome - 300000) * 0.10;
+                    } else if (netIncome <= 750000) {
+                        tax = 150000 * 0.05 + 200000 * 0.10 + (netIncome - 500000) * 0.15;
+                    } else if (netIncome <= 1000000) {
+                        tax = 150000 * 0.05 + 200000 * 0.10 + 250000 * 0.15 + (netIncome - 750000) * 0.20;
+                    } else if (netIncome <= 2000000) {
+                        tax = 150000 * 0.05 + 200000 * 0.10 + 250000 * 0.15 + 250000 * 0.20 + (netIncome - 1000000) * 0.25;
+                    } else if (netIncome <= 5000000) {
+                        tax = 150000 * 0.05 + 200000 * 0.10 + 250000 * 0.15 + 250000 * 0.20 + 1000000 * 0.25 + (netIncome - 2000000) * 0.30;
+                    } else {
+                        tax = 150000 * 0.05 + 200000 * 0.10 + 250000 * 0.15 + 250000 * 0.20 + 1000000 * 0.25 + 3000000 * 0.30 + (netIncome - 5000000) * 0.35;
+                    }
+                }
+                
+                const resultDiv = document.getElementById('income-tax-result');
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>ผลการคำนวณภาษีเงินได้</h3>
+                        <div class="result-item">
+                            <span>รายได้ทั้งปี:</span>
+                            <span>${income.toLocaleString()} บาท</span>
+                        </div>
+                        <div class="result-item">
+                            <span>ค่าใช้จ่าย/ลดหย่อน:</span>
+                            <span>${(expenses + personalDeduction + spouseDeduction).toLocaleString()} บาท</span>
+                        </div>
+                        <div class="result-item">
+                            <span>รายได้สุทธิ:</span>
+                            <span>${Math.max(0, netIncome).toLocaleString()} บาท</span>
+                        </div>
+                        <div class="result-item">
+                            <span>ภาษีที่ต้องชำระ:</span>
+                            <span>${tax.toLocaleString()} บาท</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Animate result
+                const result = resultDiv.querySelector('.result');
+                result.style.opacity = '0';
+                result.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    result.style.opacity = '1';
+                    result.style.transform = 'translateY(0)';
+                }, 100);
+            }, 800);
+        }
+
+        function calculateVAT() {
+            showLoading();
+            
+            setTimeout(() => {
+                const amount = parseFloat(document.getElementById('amount').value) || 0;
+                const vatType = document.getElementById('vat-type').value;
+                
+                let vatAmount, totalAmount, baseAmount;
+                
+                if (vatType === 'add') {
+                    // Add VAT to amount
+                    baseAmount = amount;
+                    vatAmount = amount * 0.07;
+                    totalAmount = amount + vatAmount;
+                } else {
+                    // Amount includes VAT
+                    totalAmount = amount;
+                    baseAmount = amount / 1.07;
+                    vatAmount = totalAmount - baseAmount;
+                }
+                
+                const resultDiv = document.getElementById('vat-result');
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>ผลการคำนวณ VAT</h3>
+                        <div class="result-item">
+                            <span>ราคาฐาน (ไม่รวม VAT):</span>
+                            <span>${baseAmount.toLocaleString()} บาท</span>
+                        </div>
+                        <div class="result-item">
+                            <span>VAT 7%:</span>
+                            <span>${vatAmount.toLocaleString()} บาท</span>
+                        </div>
+                        <div class="result-item">
+                            <span>ราคารวม VAT:</span>
+                            <span>${totalAmount.toLocaleString()} บาท</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Animate result
+                const result = resultDiv.querySelector('.result');
+                result.style.opacity = '0';
+                result.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    result.style.opacity = '1';
+                    result.style.transform = 'translateY(0)';
+                }, 100);
+            }, 800);
+        }
+
+        function calculateWithholding() {
+            showLoading();
+            
+            setTimeout(() => {
+                const paymentAmount = parseFloat(document.getElementById('payment-amount').value) || 0;
+                const taxRate = parseFloat(document.getElementById('tax-rate').value) || 0;
+                
+                const withholdingTax = paymentAmount * (taxRate / 100);
+                const netPayment = paymentAmount - withholdingTax;
+                
+                const resultDiv = document.getElementById('withholding-result');
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>ผลการคำนวณภาษีหัก ณ ที่จ่าย</h3>
+                        <div class="result-item">
+                            <span>จำนวนเงินที่จ่าย:</span>
+                            <span>${paymentAmount.toLocaleString()} บาท</span>
+                        </div>
+                        <div class="result-item">
+                            <span>อัตราภาษี:</span>
+                            <span>${taxRate}%</span>
+                        </div>
+                        <div class="result-item">
+                            <span>ภาษีหัก ณ ที่จ่าย:</span>
+                            <span>${withholdingTax.toLocaleString()} บาท</span>
+                        </div>
+                        <div class="result-item">
+                            <span>จำนวนเงินสุทธิ:</span>
+                            <span>${netPayment.toLocaleString()} บาท</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Animate result
+                const result = resultDiv.querySelector('.result');
+                result.style.opacity = '0';
+                result.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    result.style.opacity = '1';
+                    result.style.transform = 'translateY(0)';
+                }, 100);
+            }, 800);
+        }
+
+        // Initialize smooth transitions for tab contents
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            });
+        });
+    </script>
+</body>
+</html>
